@@ -67,6 +67,13 @@ employees = [
 
 created_users = []
 
+hr_user, hr_created = User.objects.get_or_create(username="hr", defaults={"first_name": "HR", "last_name": "Manager", "email": "hr@peoplecore.demo", "role": "HR", "is_active": True})
+hr_user.role = "HR"
+hr_user.is_active = True
+hr_user.set_password("Demo@12345")
+hr_user.save()
+print("HR account ready: hr")
+
 for employee_id, first_name, last_name, designation, department_name in employees:
     username = employee_id.lower()
 
