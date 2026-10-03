@@ -1,0 +1,11 @@
+venv/
+.env
+db.sqlite3
+db.sqlite3.backup
+*.pyc
+__pycache__/
+media/
+staticfiles/
+.idea/
+.vscode/
+peoplecore_data.json

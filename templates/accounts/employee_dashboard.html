@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Employee Dashboard</title>
+</head>
+<body>
+
+<h1>Employee Dashboard</h1>
+
+<p>Welcome, {{ request.user.username }}</p>
+
+<p>You are logged in as Employee.</p>
+
+<a href="{% url 'logout' %}">Logout</a>
+
+</body>
+</html>

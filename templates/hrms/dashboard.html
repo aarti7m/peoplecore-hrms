@@ -1,0 +1,25 @@
+{% extends 'hrms/base.html' %}
+{% block title %}Dashboard | PeopleCore{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>Dashboard</h1>
+    <p>Welcome back, {{ user.first_name|default:user.username }}.</p>
+  </div>
+</div>
+<div class="grid cards">
+  {% if user_role == 'ADMIN' %}
+  <a class="panel department-card" href="{% url 'employees' %}"><h3>Employee management</h3><p class="muted">Manage employee records and access.</p></a>
+  <a class="panel department-card" href="{% url 'departments' %}"><h3>Departments</h3><p class="muted">Review organizational structure.</p></a>
+  <a class="panel department-card" href="{% url 'reports' %}"><h3>Company reports</h3><p class="muted">Open workforce and attendance reports.</p></a>
+  {% elif user_role == 'HR' %}
+  <a class="panel department-card" href="{% url 'employees' %}"><h3>Employees</h3><p class="muted">Review and update employee records.</p></a>
+  <a class="panel department-card" href="{% url 'attendance' %}"><h3>Attendance</h3><p class="muted">Monitor today’s attendance.</p></a>
+  <a class="panel department-card" href="{% url 'leaves' %}"><h3>Leave requests</h3><p class="muted">Process pending applications.</p></a>
+  {% else %}
+  <a class="panel department-card" href="{% url 'my_attendance' %}"><h3>My attendance</h3><p class="muted">View your attendance history.</p></a>
+  <a class="panel department-card" href="{% url 'apply_leave' %}"><h3>Apply for leave</h3><p class="muted">Submit a new leave request.</p></a>
+  <a class="panel department-card" href="{% url 'announcements' %}"><h3>Announcements</h3><p class="muted">Read company updates.</p></a>
+  {% endif %}
+</div>
+{% endblock %}

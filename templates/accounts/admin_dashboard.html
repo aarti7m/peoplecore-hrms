@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard</title>
+</head>
+<body>
+
+    <h1>Employee Management System</h1>
+
+    <h2>Admin Dashboard</h2>
+
+    <p>Welcome, {{ request.user.username }}</p>
+
+    <hr>
+
+    <h3>Overview</h3>
+
+    <p>Total Employees: {{ total_employees }}</p>
+
+    <p>Total HR: {{ total_hr }}</p>
+
+    <p>Total Departments: {{ total_departments }}</p>
+
+    <p>Pending Leave Requests: {{ pending_leaves }}</p>
+
+    <hr>
+
+    <h3>Quick Actions</h3>
+
+    <ul>
+        <li>Manage Employees</li>
+        <li>Manage HR</li>
+        <li>Manage Departments</li>
+        <li>Attendance</li>
+        <li>Leave Requests</li>
+        <li>Announcements</li>
+        <li>Reports</li>
+    </ul>
+
+    <br>
+
+    <a href="{% url 'logout' %}">Logout</a>
+
+
+</body>
+</html>

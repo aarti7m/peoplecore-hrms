@@ -1,0 +1,183 @@
+{% extends 'hrms/base.html' %}
+
+{% block title %}Salary | PeopleCore HRMS{% endblock %}
+
+{% block content %}
+
+<div class="page-header salary-header">
+    <div>
+        <h1>Salary Management</h1>
+        <p class="muted">Manage employee salary and payment records.</p>
+    </div>
+
+    <a href="{% url 'salary_add' %}" class="btn btn-primary salary-add-btn">
+        <span class="salary-plus">＋</span>
+        Add Salary
+    </a>
+</div>
+
+<div class="salary-summary">
+    <div class="salary-summary-card">
+        <div class="salary-summary-icon">₹</div>
+        <div>
+            <span class="salary-summary-label">Payroll</span>
+            <strong>Salary Records</strong>
+        </div>
+    </div>
+
+    <div class="salary-summary-card">
+        <div class="salary-summary-icon">✓</div>
+        <div>
+            <span class="salary-summary-label">Payment</span>
+            <strong>Track Paid & Pending</strong>
+        </div>
+    </div>
+
+    <div class="salary-summary-card">
+        <div class="salary-summary-icon">▣</div>
+        <div>
+            <span class="salary-summary-label">Records</span>
+            <strong>{{ salaries|length }} Current Results</strong>
+        </div>
+    </div>
+</div>
+
+<form class="filters salary-filters" method="get">
+
+    <div class="search-wrap">
+        <input
+            class="search-input"
+            name="q"
+            value="{{ request.GET.q }}"
+            placeholder="Search employee"
+        >
+    </div>
+
+    <select name="status">
+        <option value="">All statuses</option>
+        <option value="PENDING" {% if request.GET.status == "PENDING" %}selected{% endif %}>
+            Pending
+        </option>
+        <option value="PAID" {% if request.GET.status == "PAID" %}selected{% endif %}>
+            Paid
+        </option>
+    </select>
+
+    <input
+        class="form-control"
+        type="date"
+        name="month"
+        value="{{ request.GET.month }}"
+    >
+
+    <button class="btn btn-secondary" type="submit">
+        Filter
+    </button>
+
+    <a class="btn btn-secondary" href="{% url 'salary' %}">
+        Clear
+    </a>
+
+</form>
+
+<div class="panel table-panel salary-table-panel">
+
+    <div class="salary-table-heading">
+        <div>
+            <h2>Employee Payroll</h2>
+            <p class="muted">Salary details and payment status</p>
+        </div>
+    </div>
+
+    <div class="table-wrap">
+        <table class="table salary-table">
+            <thead>
+                <tr>
+                    <th>Employee</th>
+                    <th>Month</th>
+                    <th>Basic</th>
+                    <th>Allowances</th>
+                    <th>Deductions</th>
+                    <th>Net Salary</th>
+                    <th>Status</th>
+                    <th>Payment Date</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for salary in salaries %}
+                <tr>
+                    <td>
+                        <div class="salary-employee">
+                            <div class="salary-avatar">
+                                {{ salary.employee.first_name|first|default:salary.employee.username|first|upper }}
+                            </div>
+                            <div>
+                                <strong>
+                                    {{ salary.employee.get_full_name|default:salary.employee.username }}
+                                </strong>
+                                <small>{{ salary.employee.username }}</small>
+                            </div>
+                        </div>
+                    </td>
+
+                    <td>
+                        <span class="month-badge">
+                            {{ salary.month|date:"M Y" }}
+                        </span>
+                    </td>
+
+                    <td>₹{{ salary.basic_salary|floatformat:2 }}</td>
+                    <td>₹{{ salary.allowances|floatformat:2 }}</td>
+                    <td>₹{{ salary.deductions|floatformat:2 }}</td>
+
+                    <td>
+                        <strong class="net-salary">
+                            ₹{{ salary.net_salary|floatformat:2 }}
+                        </strong>
+                    </td>
+
+                    <td>
+                        {% if salary.status == "PAID" %}
+                            <span class="salary-status paid">● Paid</span>
+                        {% else %}
+                            <span class="salary-status pending">● Pending</span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {% if salary.payment_date %}
+                            {{ salary.payment_date|date:"d M Y" }}
+                        {% else %}
+                            <span class="muted">Not paid</span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        <a
+                            href="{% url 'salary_edit' salary.pk %}"
+                            class="btn btn-secondary salary-edit-btn"
+                        >
+                            Edit
+                        </a>
+                    </td>
+                </tr>
+
+                {% empty %}
+                <tr>
+                    <td colspan="9">
+                        <div class="salary-empty">
+                            <div class="salary-empty-icon">₹</div>
+                            <strong>No salary records found</strong>
+                            <span>Add an employee salary record to get started.</span>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,326 @@
+
+{% extends 'hrms/base.html' %}
+
+{% block title %}Employee Form | PeopleCore{% endblock %}
+
+{% block content %}
+
+<div class="page-head">
+    <div>
+        <h1>{% if employee %}Edit Employee{% else %}Add Employee{% endif %}</h1>
+        <p>Create or update an employee record.</p>
+    </div>
+</div>
+
+<form method="post" enctype="multipart/form-data" data-validate novalidate>
+
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+        <div class="badge danger" style="margin-bottom:20px;">
+            {{ form.non_field_errors }}
+        </div>
+    {% endif %}
+
+    <div class="panel form-panel">
+        <div class="panel-body">
+
+            <div class="form-grid">
+
+                <!-- Employee ID -->
+                <div class="field">
+                    <label for="employee_id">Employee ID</label>
+
+                    <input
+                        class="form-control"
+                        id="employee_id"
+                        name="employee_id"
+                        value="{{ form.employee_id.value|default:'' }}"
+                        required
+                    >
+
+                    {% if form.employee_id.errors %}
+                        <div class="invalid-feedback" style="display:block;">
+                            {{ form.employee_id.errors.0 }}
+                        </div>
+                    {% endif %}
+                </div>
+
+
+                <!-- Full Name -->
+                <div class="field">
+                    <label for="full_name">Full name</label>
+
+                    <input
+                        class="form-control"
+                        id="full_name"
+                        name="full_name"
+                        value="{{ form.full_name.value|default:'' }}"
+                        required
+                    >
+
+                    {% if form.full_name.errors %}
+                        <div class="invalid-feedback" style="display:block;">
+                            {{ form.full_name.errors.0 }}
+                        </div>
+                    {% endif %}
+                </div>
+
+
+                <!-- Username -->
+                <div class="field">
+                    <label for="username">Username</label>
+
+                    <input
+                        class="form-control"
+                        id="username"
+                        name="username"
+                        value="{{ form.username.value|default:'' }}"
+                        required
+                    >
+
+                    {% if form.username.errors %}
+                        <div class="invalid-feedback" style="display:block;">
+                            {{ form.username.errors.0 }}
+                        </div>
+                    {% endif %}
+                </div>
+
+
+                <!-- Email -->
+                <div class="field">
+                    <label for="email">Email</label>
+
+                    <input
+                        class="form-control"
+                        id="email"
+                        name="email"
+                        type="email"
+                        value="{{ form.email.value|default:'' }}"
+                        required
+                    >
+
+                    {% if form.email.errors %}
+                        <div class="invalid-feedback" style="display:block;">
+                            {{ form.email.errors.0 }}
+                        </div>
+                    {% endif %}
+                </div>
+
+
+                <!-- Password -->
+                <div class="field">
+                    <label for="password">Password</label>
+
+                    <input
+                        class="form-control"
+                        id="password"
+                        name="password"
+                        type="password"
+                        {% if not employee %}required{% endif %}
+                    >
+
+                    {% if employee %}
+                        <span class="help">
+                            Leave blank to keep the current password.
+                        </span>
+                    {% else %}
+                        <span class="help">
+                            Set the employee's login password.
+                        </span>
+                    {% endif %}
+
+                    {% if form.password.errors %}
+                        <div class="invalid-feedback" style="display:block;">
+                            {{ form.password.errors.0 }}
+                        </div>
+                    {% endif %}
+                </div>
+
+
+                <!-- Phone -->
+                <div class="field">
+                    <label for="phone">Phone</label>
+
+                    <input
+                        class="form-control"
+                        id="phone"
+                        name="phone"
+                        value="{{ form.phone.value|default:'' }}"
+                        required
+                    >
+
+                    {% if form.phone.errors %}
+                        <div class="invalid-feedback" style="display:block;">
+                            {{ form.phone.errors.0 }}
+                        </div>
+                    {% endif %}
+                </div>
+
+
+                <!-- Department -->
+                <div class="field">
+                    <label for="department">Department</label>
+
+                    <select
+                        class="form-control"
+                        id="department"
+                        name="department"
+                        required
+                    >
+                        <option value="">Select department</option>
+
+                        {% for department in departments %}
+                            <option
+                                value="{{ department.pk }}"
+                                {% if form.department.value|stringformat:"s" == department.pk|stringformat:"s" %}
+                                    selected
+                                {% elif employee.department.pk == department.pk %}
+                                    selected
+                                {% endif %}
+                            >
+                                {{ department.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+
+                    {% if form.department.errors %}
+                        <div class="invalid-feedback" style="display:block;">
+                            {{ form.department.errors.0 }}
+                        </div>
+                    {% endif %}
+                </div>
+
+
+                <!-- Designation -->
+                <div class="field">
+                    <label for="designation">Designation</label>
+
+                    <input
+                        class="form-control"
+                        id="designation"
+                        name="designation"
+                        value="{{ form.designation.value|default:'' }}"
+                        required
+                    >
+
+                    {% if form.designation.errors %}
+                        <div class="invalid-feedback" style="display:block;">
+                            {{ form.designation.errors.0 }}
+                        </div>
+                    {% endif %}
+                </div>
+
+
+                <!-- Date of Joining -->
+                <div class="field">
+                    <label for="joining_date">Date of joining</label>
+
+                    <input
+                        class="form-control"
+                        id="joining_date"
+                        type="date"
+                        name="joining_date"
+                        value="{{ form.joining_date.value|date:'Y-m-d' }}"
+                        required
+                    >
+
+                    {% if form.joining_date.errors %}
+                        <div class="invalid-feedback" style="display:block;">
+                            {{ form.joining_date.errors.0 }}
+                        </div>
+                    {% endif %}
+                </div>
+
+
+                <!-- Profile Photo -->
+                <div class="field">
+                    <label for="photo">Profile photo</label>
+
+                    <input
+                        class="form-control"
+                        id="photo"
+                        type="file"
+                        name="photo"
+                        accept="image/*"
+                    >
+
+                    <span class="help">
+                        JPG or PNG, maximum 2 MB.
+                    </span>
+
+                    {% if form.photo.errors %}
+                        <div class="invalid-feedback" style="display:block;">
+                            {{ form.photo.errors.0 }}
+                        </div>
+                    {% endif %}
+                </div>
+
+
+                <!-- Address -->
+                <div class="field full">
+                    <label for="address">Address</label>
+
+                    <textarea
+                        class="form-control"
+                        id="address"
+                        name="address"
+                    >{{ form.address.value|default:'' }}</textarea>
+
+                    {% if form.address.errors %}
+                        <div class="invalid-feedback" style="display:block;">
+                            {{ form.address.errors.0 }}
+                        </div>
+                    {% endif %}
+                </div>
+
+
+                <!-- Status -->
+                <div class="field">
+                    <label for="is_active">Status</label>
+
+                    <select
+                        class="form-control"
+                        id="is_active"
+                        name="is_active"
+                    >
+                        <option
+                            value="1"
+                            {% if form.is_active.value != False %}selected{% endif %}
+                        >
+                            Active
+                        </option>
+
+                        <option
+                            value="0"
+                            {% if form.is_active.value == False %}selected{% endif %}
+                        >
+                            Inactive
+                        </option>
+                    </select>
+
+                    {% if form.is_active.errors %}
+                        <div class="invalid-feedback" style="display:block;">
+                            {{ form.is_active.errors.0 }}
+                        </div>
+                    {% endif %}
+                </div>
+
+            </div>
+
+           <div class="form-actions">
+    <a class="btn btn-secondary" href="{% url 'employees' %}">
+        Cancel
+    </a>
+
+    <button class="btn btn-primary" type="submit">
+        Save employee
+    </button>
+</div>
+
+        </div>
+    </div>
+
+</form>
+
+{% endblock %}

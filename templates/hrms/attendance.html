@@ -1,0 +1,165 @@
+{% extends 'hrms/base.html' %}
+{% load static %}
+
+{% block title %}Attendance | PeopleCore{% endblock %}
+
+{% block content %}
+
+<div class="page-head">
+    <div>
+        <h1>Attendance</h1>
+        <p>Review daily check-ins, absences, and leave.</p>
+    </div>
+
+    <a class="btn btn-primary" href="{% url 'attendance_add' %}">
+        ＋ Mark Attendance
+    </a>
+</div>
+
+<form class="filters" method="get">
+
+    <div class="search-wrap">
+        <input
+            class="search-input"
+            type="text"
+            name="q"
+            value="{{ request.GET.q }}"
+            placeholder="Search employee or ID"
+        >
+    </div>
+
+    <select name="department">
+        <option value="">All departments</option>
+
+        {% for department in departments %}
+            <option
+                value="{{ department.id }}"
+                {% if request.GET.department == department.id|stringformat:"s" %}
+                    selected
+                {% endif %}
+            >
+                {{ department.name }}
+            </option>
+        {% endfor %}
+    </select>
+
+    <select name="status">
+        <option value="">All statuses</option>
+
+        <option value="PRESENT" {% if request.GET.status == "PRESENT" %}selected{% endif %}>
+            Present
+        </option>
+
+        <option value="ABSENT" {% if request.GET.status == "ABSENT" %}selected{% endif %}>
+            Absent
+        </option>
+
+        <option value="LEAVE" {% if request.GET.status == "LEAVE" %}selected{% endif %}>
+            Leave
+        </option>
+    </select>
+
+    <input
+        class="form-control"
+        type="date"
+        name="date"
+        value="{{ request.GET.date }}"
+    >
+
+    <button class="btn btn-secondary" type="submit">
+        Filter
+    </button>
+
+    <a class="btn btn-secondary" href="{% url 'attendance' %}">
+        Clear
+    </a>
+
+</form>
+
+<div class="panel table-panel">
+
+    <div class="table-wrap">
+
+        <table class="table">
+
+            <thead>
+                <tr>
+                    <th>Employee</th>
+                    <th>Employee ID</th>
+                    <th>Department</th>
+                    <th>Date</th>
+                    <th>Check in</th>
+                    <th>Check out</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for record in attendance_records %}
+
+                <tr>
+
+                    <td>
+                        <b>
+                            {% if record.employee.get_full_name %}
+                                {{ record.employee.get_full_name }}
+                            {% else %}
+                                {{ record.employee.username }}
+                            {% endif %}
+                        </b>
+                    </td>
+
+                    <td>
+                        {{ record.employee.employeeprofile.employee_id }}
+                    </td>
+
+                    <td>
+                        {{ record.employee.employeeprofile.department.name|default:"—" }}
+                    </td>
+
+                    <td>
+                        {{ record.date|date:"M d, Y" }}
+                    </td>
+
+                    <td>
+                        {{ record.check_in|time:"H:i"|default:"—" }}
+                    </td>
+
+                    <td>
+                        {{ record.check_out|time:"H:i"|default:"—" }}
+                    </td>
+
+                    <td>
+                        {% if record.status == "PRESENT" %}
+                            <span class="badge success">Present</span>
+                        {% elif record.status == "ABSENT" %}
+                            <span class="badge danger">Absent</span>
+                        {% else %}
+                            <span class="badge warning">Leave</span>
+                        {% endif %}
+                    </td>
+
+                </tr>
+
+                {% empty %}
+
+                <tr>
+                    <td colspan="7">
+                        <div class="empty">
+                            No attendance records found.
+                        </div>
+                    </td>
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+{% endblock %}

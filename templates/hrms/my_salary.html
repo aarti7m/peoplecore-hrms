@@ -1,0 +1,58 @@
+{% extends 'hrms/base.html' %}
+
+{% block title %}My Salary | PeopleCore HRMS{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h1>My Salary</h1>
+        <p class="muted">View your salary and payment history.</p>
+    </div>
+</div>
+
+<div class="panel table-panel">
+    <div class="table-wrap">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Month</th>
+                    <th>Basic Salary</th>
+                    <th>Allowances</th>
+                    <th>Deductions</th>
+                    <th>Net Salary</th>
+                    <th>Status</th>
+                    <th>Payment Date</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for salary in salaries %}
+                <tr>
+                    <td>{{ salary.month|date:"F Y" }}</td>
+                    <td>₹{{ salary.basic_salary|floatformat:2 }}</td>
+                    <td>₹{{ salary.allowances|floatformat:2 }}</td>
+                    <td>₹{{ salary.deductions|floatformat:2 }}</td>
+                    <td><strong>₹{{ salary.net_salary|floatformat:2 }}</strong></td>
+                    <td>{{ salary.get_status_display }}</td>
+                    <td>
+                        {% if salary.payment_date %}
+                            {{ salary.payment_date|date:"d M Y" }}
+                        {% else %}
+                            —
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7">
+                        No salary records are available yet.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,228 @@
+{% extends 'hrms/base.html' %}
+
+{% block title %}{{ form_title }} | PeopleCore HRMS{% endblock %}
+
+{% block content %}
+
+<div class="salary-form-page">
+
+    <div class="page-header salary-form-header">
+        <div>
+            <div class="salary-form-breadcrumb">
+                Payroll / Salary Management
+            </div>
+            <h1>{{ form_title }}</h1>
+            <p class="muted">
+                Add and manage employee salary and payment information.
+            </p>
+        </div>
+
+        <a href="{% url 'salary' %}" class="btn btn-secondary">
+            ← Back to Salary
+        </a>
+    </div>
+
+    {% if form.non_field_errors %}
+        <div class="salary-form-error">
+            {{ form.non_field_errors }}
+        </div>
+    {% endif %}
+
+    <form method="post" id="salaryForm">
+        {% csrf_token %}
+
+        <div class="salary-form-layout">
+
+            <!-- LEFT SIDE -->
+            <div class="salary-form-main">
+
+                <!-- Employee & Pay Period -->
+                <div class="salary-form-card">
+                    <div class="salary-card-title">
+                        <div class="salary-card-icon">👤</div>
+                        <div>
+                            <h2>Employee & Pay Period</h2>
+                            <p>Select the employee and salary month.</p>
+                        </div>
+                    </div>
+
+                    <div class="salary-fields-grid">
+
+                        {% for field in form %}
+                            {% if field.name == 'employee' or field.name == 'month' %}
+                                <div class="salary-field">
+                                    <label for="{{ field.id_for_label }}">
+                                        {{ field.label }}
+                                    </label>
+
+                                    {{ field }}
+
+                                    {% if field.errors %}
+                                        <div class="salary-field-error">
+                                            {{ field.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+
+                    </div>
+                </div>
+
+
+                <!-- Salary Breakdown -->
+                <div class="salary-form-card">
+
+                    <div class="salary-card-title">
+                        <div class="salary-card-icon">₹</div>
+                        <div>
+                            <h2>Salary Breakdown</h2>
+                            <p>Enter the employee's monthly salary components.</p>
+                        </div>
+                    </div>
+
+                    <div class="salary-fields-grid">
+
+                        {% for field in form %}
+                            {% if field.name == 'basic_salary' or field.name == 'allowances' or field.name == 'deductions' %}
+                                <div class="salary-field">
+                                    <label for="{{ field.id_for_label }}">
+                                        {{ field.label }}
+                                    </label>
+
+                                    <div class="salary-input-wrap">
+                                        <span>₹</span>
+                                        {{ field }}
+                                    </div>
+
+                                    {% if field.errors %}
+                                        <div class="salary-field-error">
+                                            {{ field.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+
+                    </div>
+
+                    <div class="salary-net-preview">
+                        <div>
+                            <span>Net Salary</span>
+                            <small>Basic + Allowances − Deductions</small>
+                        </div>
+
+                        <strong id="netSalaryPreview">₹0.00</strong>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- RIGHT SIDE -->
+            <div class="salary-form-side">
+
+                <!-- Payment -->
+                <div class="salary-form-card">
+
+                    <div class="salary-card-title">
+                        <div class="salary-card-icon">✓</div>
+                        <div>
+                            <h2>Payment Details</h2>
+                            <p>Update payment status and date.</p>
+                        </div>
+                    </div>
+
+                    {% for field in form %}
+                        {% if field.name == 'status' or field.name == 'payment_date' %}
+                            <div class="salary-field">
+                                <label for="{{ field.id_for_label }}">
+                                    {{ field.label }}
+                                </label>
+
+                                {{ field }}
+
+                                {% if field.errors %}
+                                    <div class="salary-field-error">
+                                        {{ field.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+
+                </div>
+
+
+                <!-- Information -->
+                <div class="salary-info-card">
+                    <div class="salary-info-icon">i</div>
+                    <div>
+                        <strong>Payroll information</strong>
+                        <p>
+                            Salary records are stored securely in PeopleCore
+                            and can be reviewed by authorized HR or Admin users.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ACTIONS -->
+        <div class="salary-form-actions">
+            <a href="{% url 'salary' %}" class="btn btn-secondary">
+                Cancel
+            </a>
+
+            <button class="btn btn-primary salary-save-btn" type="submit">
+                ✓ Save Salary
+            </button>
+        </div>
+
+    </form>
+
+</div>
+
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const basic = document.getElementById("id_basic_salary");
+    const allowances = document.getElementById("id_allowances");
+    const deductions = document.getElementById("id_deductions");
+    const preview = document.getElementById("netSalaryPreview");
+
+    function numberValue(input) {
+        return parseFloat(input?.value) || 0;
+    }
+
+    function updateNetSalary() {
+        const net =
+            numberValue(basic) +
+            numberValue(allowances) -
+            numberValue(deductions);
+
+        preview.textContent =
+            "₹" + net.toLocaleString("en-IN", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+    }
+
+    [basic, allowances, deductions].forEach(function (input) {
+        if (input) {
+            input.addEventListener("input", updateNetSalary);
+        }
+    });
+
+    updateNetSalary();
+});
+</script>
+
+
+{% endblock %}

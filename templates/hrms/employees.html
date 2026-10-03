@@ -1,0 +1,193 @@
+{% extends 'hrms/base.html' %}
+{% load static %}
+
+{% block title %}Employees | PeopleCore{% endblock %}
+
+{% block content %}
+
+<div class="page-head">
+    <div>
+        <h1>Employees</h1>
+        <p>Manage workforce records and employment status.</p>
+    </div>
+
+    <a class="btn btn-primary" href="{% url 'employee_add' %}">
+        ＋ Add Employee
+    </a>
+</div>
+
+<form class="filters" method="get">
+
+    <div class="search-wrap">
+        <svg class="icon">
+            <use href="{% static 'images/icons.svg' %}#search"></use>
+        </svg>
+
+        <input
+            class="search-input"
+            data-search
+            name="q"
+            value="{{ request.GET.q }}"
+            placeholder="Search employee"
+        >
+    </div>
+
+    <select data-department name="department">
+        <option value="">All departments</option>
+
+        {% for d in departments %}
+            <option value="{{ d.name }}">
+                {{ d.name }}
+            </option>
+        {% endfor %}
+    </select>
+
+    <select data-status name="status">
+        <option value="">All statuses</option>
+        <option value="active">Active</option>
+        <option value="inactive">Inactive</option>
+    </select>
+
+    <button class="btn btn-secondary" type="submit">
+        Filter
+    </button>
+
+</form>
+
+<div class="panel table-panel">
+
+    <div class="table-wrap">
+
+        <table class="table">
+
+            <thead>
+                <tr>
+                    <th>Employee ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Department</th>
+                    <th>Designation</th>
+                    <th>Joining Date</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for employee in employees %}
+
+                <tr
+                    data-filter-row
+                    data-department="{{ employee.department.name }}"
+                    data-status="{{ employee.status|lower }}"
+                >
+
+                    <td>
+                        {{ employee.employee_id }}
+                    </td>
+
+                    <td>
+                        <div class="person">
+
+                            {% if employee.photo %}
+                                <img
+                                    class="avatar"
+                                    src="{{ employee.photo.url }}"
+                                    alt=""
+                                >
+                            {% else %}
+                                <img
+                                    class="avatar"
+                                    src="{% static 'images/avatar-placeholder.svg' %}"
+                                    alt=""
+                                >
+                            {% endif %}
+
+                            <b>{{ employee.name }}</b>
+
+                        </div>
+                    </td>
+
+                    <td>
+                        {{ employee.email }}
+                    </td>
+
+                    <td>
+                        {{ employee.phone }}
+                    </td>
+
+                    <td>
+                        {{ employee.department.name }}
+                    </td>
+
+                    <td>
+                        {{ employee.designation }}
+                    </td>
+
+                    <td>
+                        {{ employee.joining_date|date:"M d, Y" }}
+                    </td>
+
+                    <td>
+                        <span class="badge {% if employee.is_active %}success{% else %}neutral{% endif %}">
+                            {{ employee.status }}
+                        </span>
+                    </td>
+
+                    <td class="actions">
+
+                        <a
+                            class="btn btn-secondary btn-sm"
+                            href="{% url 'employee_profile' employee.pk %}"
+                        >
+                            View
+                        </a>
+
+                        <a
+                            class="btn btn-secondary btn-sm"
+                            href="{% url 'employee_edit' employee.pk %}"
+                        >
+                            Edit
+                        </a>
+
+                        <form
+                            method="post"
+                            action="{% url 'employee_toggle_status' employee.pk %}"
+                            style="display:inline;"
+                        >
+                            {% csrf_token %}
+
+                            <button
+                                class="btn btn-secondary btn-sm"
+                                type="submit"
+                            >
+                                {{ employee.is_active|yesno:"Deactivate,Activate" }}
+                            </button>
+
+                        </form>
+
+                    </td>
+
+                </tr>
+
+                {% empty %}
+
+                <tr>
+                    <td colspan="9" style="text-align:center;">
+                        No employees found.
+                    </td>
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+{% endblock %}

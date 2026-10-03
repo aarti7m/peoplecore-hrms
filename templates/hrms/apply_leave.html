@@ -1,0 +1,70 @@
+{% extends "hrms/base.html" %}
+{% block title %}Apply Leave | PeopleCore{% endblock %}
+
+{% block content %}
+<div class="page-head">
+    <div>
+        <h1>Apply for leave</h1>
+        <p>Submit a new leave request for approval.</p>
+    </div>
+</div>
+
+<form method="post">
+    {% csrf_token %}
+
+    <div class="panel form-panel">
+        <div class="panel-body">
+
+            {% if form.non_field_errors %}
+                <div class="alert alert-error">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <div class="form-grid">
+
+                <div class="field">
+                    <label for="{{ form.leave_type.id_for_label }}">Leave type</label>
+                    {{ form.leave_type }}
+                    {{ form.leave_type.errors }}
+                </div>
+
+                <div class="field">
+                    <label>Available balance</label>
+                    <input class="form-control" value="12 days" disabled>
+                </div>
+
+                <div class="field">
+                    <label for="{{ form.start_date.id_for_label }}">Start date</label>
+                    {{ form.start_date }}
+                    {{ form.start_date.errors }}
+                </div>
+
+                <div class="field">
+                    <label for="{{ form.end_date.id_for_label }}">End date</label>
+                    {{ form.end_date }}
+                    {{ form.end_date.errors }}
+                </div>
+
+                <div class="field full">
+                    <label for="{{ form.reason.id_for_label }}">Reason</label>
+                    {{ form.reason }}
+                    {{ form.reason.errors }}
+                </div>
+
+            </div>
+
+            <div class="form-actions">
+                <a class="btn btn-secondary" href="{% url 'leaves' %}">
+                    Cancel
+                </a>
+
+                <button class="btn btn-primary" type="submit">
+                    Submit request
+                </button>
+            </div>
+
+        </div>
+    </div>
+</form>
+{% endblock %}

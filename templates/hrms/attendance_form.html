@@ -1,0 +1,76 @@
+{% extends 'hrms/base.html' %}
+
+{% block title %}{{ form_title }} | PeopleCore{% endblock %}
+
+{% block content %}
+
+<div class="page-head">
+    <div>
+        <h1>{{ form_title }}</h1>
+        <p>Record employee attendance.</p>
+    </div>
+
+    <a class="btn btn-secondary" href="{% url 'attendance' %}">
+        Back to Attendance
+    </a>
+</div>
+
+<div class="panel form-panel">
+
+    <form method="post">
+        <div class="form-grid">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+            <div class="alert alert-error">
+                {{ form.non_field_errors }}
+            </div>
+        {% endif %}
+
+        <div class="field">
+            <label for="{{ form.employee.id_for_label }}">Employee</label>
+            {{ form.employee }}
+            {{ form.employee.errors }}
+        </div>
+
+        <div class="field">
+            <label for="{{ form.date.id_for_label }}">Date</label>
+            {{ form.date }}
+            {{ form.date.errors }}
+        </div>
+
+        <div class="field">
+            <label for="{{ form.status.id_for_label }}">Status</label>
+            {{ form.status }}
+            {{ form.status.errors }}
+        </div>
+
+        <div class="field">
+            <label for="{{ form.check_in.id_for_label }}">Check in</label>
+            {{ form.check_in }}
+            {{ form.check_in.errors }}
+        </div>
+
+        <div class="field">
+            <label for="{{ form.check_out.id_for_label }}">Check out</label>
+            {{ form.check_out }}
+            {{ form.check_out.errors }}
+        </div>
+
+        </div>
+
+        <div class="form-actions">
+            <button class="btn btn-primary" type="submit">
+                Mark Attendance
+            </button>
+
+            <a class="btn btn-secondary" href="{% url 'attendance' %}">
+                Cancel
+            </a>
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}

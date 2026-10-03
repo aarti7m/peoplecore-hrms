@@ -1,0 +1,172 @@
+{% extends 'hrms/base.html' %}
+
+{% block title %}Leaves | PeopleCore{% endblock %}
+
+{% block content %}
+
+<div class="page-head">
+    <div>
+        <h1>{% if user_role == "EMPLOYEE" %}My Leaves{% else %}Leave Requests{% endif %}</h1>
+        <p>Review and manage leave applications.</p>
+    </div>
+
+    {% if user_role == "EMPLOYEE" %}
+        <a class="btn btn-primary" href="{% url 'apply_leave' %}">
+            ＋ Apply Leave
+        </a>
+    {% endif %}
+</div>
+
+{% if user_role != 'EMPLOYEE' %}
+<form class="filters" method="get">
+
+    <select name="status">
+        <option value="">All statuses</option>
+        <option value="PENDING" {% if request.GET.status == "PENDING" %}selected{% endif %}>
+            Pending
+        </option>
+        <option value="APPROVED" {% if request.GET.status == "APPROVED" %}selected{% endif %}>
+            Approved
+        </option>
+        <option value="REJECTED" {% if request.GET.status == "REJECTED" %}selected{% endif %}>
+            Rejected
+        </option>
+    </select>
+
+    <input
+        class="form-control"
+        type="date"
+        name="from"
+        value="{{ request.GET.from }}"
+    >
+
+    <input
+        class="form-control"
+        type="date"
+        name="to"
+        value="{{ request.GET.to }}"
+    >
+
+    <button class="btn btn-secondary" type="submit">
+        Filter
+    </button>
+
+    <a class="btn btn-secondary" href="{% url 'leaves' %}">
+        Clear
+    </a>
+
+</form>
+{% endif %}
+
+<div class="panel table-panel">
+
+    <div class="table-wrap">
+
+        <table class="table">
+
+            <thead>
+                <tr>
+                    <th>Employee</th>
+                    <th>Leave type</th>
+                    <th>Start date</th>
+                    <th>End date</th>
+                    <th>Reason</th>
+                    <th>Applied date</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for leave in leaves %}
+
+                <tr>
+
+                    <td>
+                        <b>
+                            {% if leave.employee.get_full_name %}
+                                {{ leave.employee.get_full_name }}
+                            {% else %}
+                                {{ leave.employee.username }}
+                            {% endif %}
+                        </b>
+                    </td>
+
+                    <td>{{ leave.get_leave_type_display }}</td>
+
+                    <td>{{ leave.start_date|date:"M d, Y" }}</td>
+
+                    <td>{{ leave.end_date|date:"M d, Y" }}</td>
+
+                    <td>{{ leave.reason|truncatechars:36 }}</td>
+
+                    <td>{{ leave.applied_at|date:"M d, Y" }}</td>
+
+                    <td>
+                        {% if leave.status == "APPROVED" %}
+                            <span class="badge success">Approved</span>
+                        {% elif leave.status == "REJECTED" %}
+                            <span class="badge danger">Rejected</span>
+                        {% else %}
+                            <span class="badge warning">Pending</span>
+                        {% endif %}
+                    </td>
+
+                    <td class="actions">
+
+                        {% if user_role == "ADMIN" or user_role == "HR" %}
+
+                            {% if leave.status == "PENDING" %}
+
+                                <form method="post" action="{% url 'approve_leave' leave.pk %}" style="display:inline;">
+                                    {% csrf_token %}
+                                    <button class="btn btn-primary btn-sm" type="submit">
+                                        Approve
+                                    </button>
+                                </form>
+
+                                <form method="post" action="{% url 'reject_leave' leave.pk %}" style="display:inline;">
+                                    {% csrf_token %}
+                                    <button class="btn btn-danger btn-sm" type="submit">
+                                        Reject
+                                    </button>
+                                </form>
+
+                            {% else %}
+
+                                <span class="muted">No action</span>
+
+                            {% endif %}
+
+                        {% else %}
+
+                            <span class="muted">—</span>
+
+                        {% endif %}
+
+                    </td>
+
+                </tr>
+
+                {% empty %}
+
+                <tr>
+                    <td colspan="8">
+                        <div class="empty">
+                            No leave requests found.
+                        </div>
+                    </td>
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+{% endblock %}
