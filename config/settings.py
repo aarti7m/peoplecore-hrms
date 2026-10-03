@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-^+da4@ayrz*e-+8z^1p+i8kv8=jr#v#wmzhocu)gl9krc=$=$7
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['peoplecore-hrms-production.up.railway.app', 'localhost', '127.0.0.1']
 
 
 # Application definition
